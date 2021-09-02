@@ -1,0 +1,8 @@
+CSV_SEPARATOR = ';'
+CLASS_SEPARATOR = '/'
+RESULTS_DIR = './experiment_result'
+NEGATIVE_CLASS = 'Other'
+PREDICTION_CONFIG = 'mandatory-leaf'
+LCPN_CLASSIFIER = 'lcpn'
+LCN_CLASSIFIER = 'lcn'
+POLICY = 'less-inclusive'
