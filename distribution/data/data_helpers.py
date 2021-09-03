@@ -44,7 +44,7 @@ def count_by_class(output_values):
     return count
 
 
-def count_by_class(local_class, strategy, output_values):
+def count_by_class(local_class, strategy, output_values, count_results_list):
     label_count = np.unique(output_values, return_counts=True)
     key_count_dict = {}
     genres = label_count[0]
@@ -58,7 +58,7 @@ def count_by_class(local_class, strategy, output_values):
 
     for key, value in sorted_dict.items():
         row = {'local_class': local_class,'class': key, 'count' : value, 'strategy': strategy}
-        count = count.append(row)
+        count_results_list.append(row)
 
     return count
 

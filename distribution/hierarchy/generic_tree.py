@@ -38,7 +38,7 @@ class Tree():
         pass
 
     @abstractmethod
-    def count_hierarchical(self, root_node, resamplers, resamplers_results_list):
+    def count_hierarchical(self, root_node, resamplers_results_list):
         pass
 
 

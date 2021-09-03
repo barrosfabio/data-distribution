@@ -57,30 +57,11 @@ def run_experiment(data_path, filename):
                 global_config.set_kfold(kfold_count)
 
                 # Calling the classification experiment
-                [report, conf_matrix] = experiment.classification(train_index, test_index)
-
-                # Pipeline result being appended to the list of results for each fold
-                metric_data_frame = pd.DataFrame.from_dict(report, orient='columns')
-                metric_data_frame['fold'] = kfold_count
-                folds_result_list.append(pd.DataFrame(metric_data_frame))
-                confusion_matrix_list.append(conf_matrix)
+                experiment.classification(train_index, test_index)
 
                 # Incrementing the kfold_count
                 kfold_count += 1
 
-            # After we finish all the folds, we can consolidate the results of the experiment
-            # Calculate the average confusion matrix for all folds
-            calculate_average_confusion_matrix(confusion_matrix_list, unique_classes)
-
-            # Calculate the average result considering the k-folds
-            consolidated_result = consolidate_result(folds_result_list)
-
-            # Build DTO objects to return the average result
-            consolidated_result['strategy'] = 'local-selective'
-            consolidated_result['classifier'] = classifier_name
-
-            # Save avg_result
-            transform_to_csv(consolidated_result, 'local_selective_result')
 
 
 if __name__ == '__main__':

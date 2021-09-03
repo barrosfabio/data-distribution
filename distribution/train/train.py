@@ -10,7 +10,7 @@ def calculate_distribution(tree):
 
     # Retrieve list of resamplers
     # Traverse the tree to train the nodes
-    tree.count_hierarchical(tree.root, global_config.resamplers, count_results_list)
+    tree.count_hierarchical(tree.root, count_results_list)
 
     # Save the resamplers_results_list
     transform_multiple_dict_to_csv(global_config.directory_list['resampling'], count_results_list, 'resamplers_results')

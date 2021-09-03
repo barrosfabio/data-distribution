@@ -92,7 +92,7 @@ class LCNTree(Tree):
                 # Continue the process recursively for all
                 self.retrieve_data(current_node, train_data_frame)
 
-    def count_hierarchical(self, root_node, resamplers, count_results_list):
+    def count_hierarchical(self, root_node, count_results_list):
         print('Training a LCN Classifier')
 
         # Retrieve child nodes
@@ -108,11 +108,9 @@ class LCNTree(Tree):
                 visited_node = root_node.child[i]
                 print('Child is {}'.format(visited_node.class_name))
 
-                count = count_by_class(visited_node.class_name, self.strategy +'-'+self.resampling_algorithm, visited_node.data.outputs)
-
-                count_results_list.append(count)
+                count_by_class(visited_node.class_name, self.strategy +'-'+self.resampling_algorithm, visited_node.data.outputs, count_results_list)
 
                 print('Finished Training')
 
                 # Go down the tree
-                self.count_hierarchical(visited_node, resamplers, count_results_list)
+                self.count_hierarchical(visited_node, count_results_list)

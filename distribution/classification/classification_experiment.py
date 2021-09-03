@@ -43,4 +43,4 @@ class ClassificationExperiment():
         tree.retrieve_data(tree.root, train_data_frame)
 
         # Check what is the data distribution here
-        train.calculate_distribution(tree, train_data_frame)
+        train.calculate_distribution(tree)
