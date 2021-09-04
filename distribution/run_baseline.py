@@ -17,8 +17,8 @@ path = '../dataset'
 result_path = '../final_result/'
 folds = 5
 classifier_type = LCPN_CLASSIFIER
-resamplers = [RANDOM_OVERSAMPLER, SMOTE_RESAMPLE, BORDERLINE_SMOTE, ADASYN_RESAMPLER, SMOTE_ENN, SMOTE_TOMEK]
-strategies = [NONE, FLAT_RESAMPLING, LOCAL_RESAMPLING]
+strategy = NONE
+resampler = NONE
 metric = 'f1-score'
 # Initialize seed of the Stratified k-fold split
 random_seed = 1
@@ -39,31 +39,27 @@ def run_experiment(data_path, filename):
     kfold = StratifiedKFold(n_splits=folds, shuffle=True, random_state=random_seed)
 
     # Create the directories to store the experiment results
-    create_result_directories(result_path, classifier_type, filename)
+    create_result_directories(result_path, classifier_type, filename, True)
 
-    for strategy in strategies:
-        resampler_results =[]
-        global_config.set_resampler_results(resampler_results)
+    resampler_results = []
+    global_config.set_resampler_results(resampler_results)
 
-        for resampler in resamplers:
+    experiment = ClassificationExperiment(unique_classes, input_data, output_data, classifier_type, strategy, resampler)
 
-            experiment = ClassificationExperiment(unique_classes, input_data, output_data, classifier_type, strategy, resampler)
+    kfold_count = 1
 
-            kfold_count = 1
+    for train_index, test_index in kfold.split(input_data, output_data):
+        print('----------Started fold {} ----------'.format(kfold_count))
+        global_config.set_kfold(kfold_count)
 
-            for train_index, test_index in kfold.split(input_data, output_data):
-                print('----------Started fold {} ----------'.format(kfold_count))
-                global_config.set_kfold(kfold_count)
+        # Calling the classification experiment
+        experiment.classification(train_index, test_index)
 
-                # Calling the classification experiment
-                experiment.classification(train_index, test_index)
+        # Incrementing the kfold_count
+        kfold_count += 1
 
-                # Incrementing the kfold_count
-                kfold_count += 1
-
-        transform_multiple_dict_to_csv(global_config.directory_list['resampling'], global_config.resampler_results,
-                                           'resamplers_results_' + classifier_type + '_' +strategy)
-
+    transform_multiple_dict_to_csv(global_config.directory_list['resampling'], global_config.resampler_results,
+                                       'resamplers_results_' + classifier_type + '_' +strategy)
 
 
 if __name__ == '__main__':

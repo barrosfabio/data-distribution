@@ -12,14 +12,17 @@ from datetime import datetime
 """
 
 
-def create_result_directories(result_path, classifier, classifier_type, file_name):
+def create_result_directories(result_path, classifier_type, file_name, baseline=False):
     global_config = GlobalConfig.instance()
 
     timestamp = datetime.now()
     timestamp_string = str(timestamp.day) + '_' + str(timestamp.month) + '_' + str(timestamp.hour) + '_' + str(
         timestamp.minute) + '_' + str(global_config.random_seed)
 
-    result_path = result_path + '_' + file_name + '_' + classifier + '_' + classifier_type + '_' + timestamp_string
+    if baseline:
+        result_path = result_path + file_name + '_baseline_' + classifier_type + '_' + timestamp_string
+    else:
+        result_path = result_path + file_name + '_' + classifier_type + '_' + timestamp_string
 
     if not os.path.isdir(result_path):
         print('Created directory {}'.format(result_path))

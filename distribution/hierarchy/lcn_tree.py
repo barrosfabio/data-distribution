@@ -86,7 +86,7 @@ class LCNTree(Tree):
                     unique_classes = np.unique(positive_classes_data.iloc[:, -1])
                     if len(unique_classes) > 1:
                         resampling = ResamplingAlgorithm(self.resampling_algorithm, 1, 3)
-                        [input_train, output_train] = resampling.resample(input_train, output_train)
+                        [input_train, output_train] = resampling.local_resample_lcn(input_train, output_train)
 
                 # Store the data in the node
                 current_node.data = Data(input_train, output_train)

@@ -4,6 +4,9 @@ from imblearn.under_sampling import RandomUnderSampler, NeighbourhoodCleaningRul
     NearMiss, AllKNN
 from distribution.resampling.handle_adasyn import handle_adasyn
 from distribution.resampling.resampling_constants import *
+from distribution.hierarchy.hierarchical_constants import NEGATIVE_CLASS
+from distribution.resampling.resampling_constants import LOCAL_RESAMPLING, IR_SELECTIVE_RESAMPLING
+from distribution.data.data_helpers import calculate_imbalance_ratio, count_by_class, slice_data, count_per_class
 
 
 import numpy as np
@@ -64,6 +67,44 @@ class ResamplingAlgorithm:
                 [input_data, output_data] = self.handle_adasyn_algorithm(input_data, output_data)
             else:
                 [input_data, output_data] = self.resampler.fit_resample(input_data, output_data)
+
+        return [input_data, output_data]
+
+        # Executes hierarchical resampling for LCN Classifier
+
+    def local_resample_lcn(self, input_data, output_data, class_name):
+
+        before_resample = count_by_class(output_data)
+        class_count = len(np.unique(output_data))
+        print('Before {} resampling'.format(self.resampling_strategy))
+        count_per_class(output_data)
+
+        negative_class = before_resample[before_resample['class'] == NEGATIVE_CLASS]
+        positive_class = before_resample[before_resample['class'] == class_name]
+        imbalance_ratio = calculate_imbalance_ratio(negative_class.iloc[0, 1], positive_class.iloc[0, 1])
+        print('Imbalance Ratio Other/Interest Class is {}'.format(imbalance_ratio))
+
+        if self.resampling_strategy != IR_SELECTIVE_RESAMPLING and class_count > 1:
+
+            if self.algorithm_name == ADASYN_RESAMPLER:
+                [input_data, output_data] = self.handle_adasyn_algorithm(input_data, output_data)
+            else:
+                [input_data, output_data] = self.fit_resample_call(input_data, output_data, before_resample)
+
+        elif self.resampling_strategy == IR_SELECTIVE_RESAMPLING and class_count > 1:
+
+            if imbalance_ratio > IMBALANCE_RATIO:
+                if self.algorithm_name == ADASYN_RESAMPLER:
+                    [input_data, output_data] = self.handle_adasyn_algorithm(input_data, output_data)
+                else:
+                    [input_data, output_data] = self.fit_resample_call(input_data, output_data, before_resample)
+
+
+            else:
+                pass
+        else:
+            print('Resampling not needed. Difference between Negatove and Positive class is: {}'.format
+                  (negative_class.iloc[0, 1] - positive_class.iloc[0, 1]))
 
         return [input_data, output_data]
 
