@@ -57,6 +57,8 @@ class LCNTree(Tree):
                 print('Current Child is {}'.format(root_node.child[i].class_name))
                 current_node = root_node.child[i]
 
+                # Add classes to
+
                 # Retrieve the positive classes for the current node
                 data_class_relationship = current_node.data_class_relationship
                 positive_classes = data_class_relationship.positive_classes
@@ -92,7 +94,7 @@ class LCNTree(Tree):
                 # Continue the process recursively for all
                 self.retrieve_data(current_node, train_data_frame)
 
-    def count_hierarchical(self, root_node, count_results_list):
+    def count_hierarchical(self, root_node):
         print('Training a LCN Classifier')
 
         # Retrieve child nodes
@@ -108,9 +110,9 @@ class LCNTree(Tree):
                 visited_node = root_node.child[i]
                 print('Child is {}'.format(visited_node.class_name))
 
-                count_by_class(visited_node.class_name, self.strategy +'-'+self.resampling_algorithm, visited_node.data.outputs, count_results_list)
+                count_by_class(visited_node.class_name, self.strategy +'-'+self.resampling_algorithm, visited_node.data.outputs)
 
                 print('Finished Training')
 
                 # Go down the tree
-                self.count_hierarchical(visited_node, count_results_list)
+                self.count_hierarchical(visited_node)

@@ -5,7 +5,7 @@ import operator
 import numpy as np
 from sklearn.model_selection import train_test_split
 from distribution.hierarchy.data import Data
-
+from distribution.config.global_config import GlobalConfig
 
 CLASS_SEPARATOR = '/'
 
@@ -44,7 +44,8 @@ def count_by_class(output_values):
     return count
 
 
-def count_by_class(local_class, strategy, output_values, count_results_list):
+def count_by_class(local_class, strategy, output_values):
+    global_config = GlobalConfig.instance()
     label_count = np.unique(output_values, return_counts=True)
     key_count_dict = {}
     genres = label_count[0]
@@ -57,8 +58,8 @@ def count_by_class(local_class, strategy, output_values, count_results_list):
     sorted_dict = dict(sorted(key_count_dict.items(), key=operator.itemgetter(1), reverse=True))
 
     for key, value in sorted_dict.items():
-        row = {'local_class': local_class,'class': key, 'count' : value, 'strategy': strategy}
-        count_results_list.append(row)
+        row = {'local_class': local_class,'class': key, 'count' : value, 'strategy': strategy, 'fold': global_config.kfold}
+        global_config.resampler_results.append(row)
 
     return count
 

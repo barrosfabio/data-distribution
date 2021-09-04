@@ -71,7 +71,7 @@ class LCPNTree(Tree):
                 print('Child is {}'.format(root_node.child[i].class_name))
                 self.retrieve_data(root_node.child[i], train_data_frame)
 
-    def count_hierarchical(self, root_node, count_results_list):
+    def count_hierarchical(self, root_node):
 
         print('Training a LCPN Classifier')
 
@@ -88,7 +88,7 @@ class LCPNTree(Tree):
             # Testing if there are at least two child classes, Otherwise we don't need to train the classifier
             if (children > 1):
 
-                count_by_class(root_node.class_name, self.strategy +'-'+self.resampling_algorithm, root_node.data.outputs, count_results_list)
+                count_by_class(root_node.class_name, self.strategy +'-'+self.resampling_algorithm, root_node.data.outputs)
 
 
 
@@ -98,4 +98,4 @@ class LCPNTree(Tree):
             # Iterate over the current node child to call recursively for all of them
             for i in range(children):
                 print('Child is {}'.format(root_node.child[i].class_name))
-                self.count_hierarchical(root_node.child[i], count_results_list)
+                self.count_hierarchical(root_node.child[i])

@@ -27,10 +27,7 @@ def create_result_directories(result_path, classifier, classifier_type, file_nam
 
     # List of directories and sub-directories where the results will be saved
     # This is the basic list
-    directory_list = {'resampling': result_path + '/resampling/',
-                      'classification_report': result_path + '/classification_report/',
-                      'overall_results': result_path + '/overall_results/',
-                      'data_distribution': result_path + '/data_distribution/'}
+    directory_list = {'resampling': result_path + '/resampling/'}
 
     for key, value in directory_list.items():
         if not os.path.isdir(value):

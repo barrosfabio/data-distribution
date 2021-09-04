@@ -42,5 +42,7 @@ class ClassificationExperiment():
         # Retrieving data according to the policies
         tree.retrieve_data(tree.root, train_data_frame)
 
+        resampling_strategy = self.strategy + self.resampler
+
         # Check what is the data distribution here
-        train.calculate_distribution(tree)
+        train.calculate_distribution(tree, resampling_strategy)

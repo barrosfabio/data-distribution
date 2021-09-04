@@ -32,3 +32,6 @@ class GlobalConfig():
 
     def set_classifier(self, classifier):
         self.classifier = classifier
+
+    def set_resampler_results(self, resampler_results):
+        self.resampler_results = resampler_results

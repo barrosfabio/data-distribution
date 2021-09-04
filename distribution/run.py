@@ -4,10 +4,10 @@ from sklearn.model_selection import StratifiedKFold
 from distribution.resampling.resampling_constants import *
 from distribution.config.global_config import GlobalConfig
 from distribution.result.results_helpers import calculate_average_result,consolidate_result, create_result_directories
-from distribution.result.confusion_matrix_helpers import calculate_average_confusion_matrix
 from distribution.hierarchy.hierarchical_constants import LCPN_CLASSIFIER, LCN_CLASSIFIER
 from distribution.classification.classification_experiment import ClassificationExperiment
-from distribution.result.results_helpers import transform_multiple_to_csv, transform_to_csv
+from distribution.result.results_helpers import transform_multiple_dict_to_csv
+
 
 import os
 import pandas as pd
@@ -46,6 +46,9 @@ def run_experiment(data_path, filename):
     confusion_matrix_list = []
 
     for strategy in strategies:
+        resampler_results =[]
+        global_config.set_resampler_results(resampler_results)
+
         for resampler in resamplers:
 
             experiment = ClassificationExperiment(unique_classes, input_data, output_data, classifier_type, strategy, resampler)
@@ -61,6 +64,9 @@ def run_experiment(data_path, filename):
 
                 # Incrementing the kfold_count
                 kfold_count += 1
+
+        transform_multiple_dict_to_csv(global_config.directory_list['resampling'], global_config.resampler_results,
+                                           'resamplers_results_' + strategy)
 
 
 
