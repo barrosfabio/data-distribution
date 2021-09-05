@@ -1,8 +1,8 @@
 from distribution.hierarchy.generic_tree import Tree
 from distribution.hierarchy.data import Data
 from distribution.hierarchy.hierarchical_constants import NEGATIVE_CLASS
-from distribution.resampling.resampling_constants import LOCAL_RESAMPLING
-from distribution.data.data_helpers import count_by_class
+from distribution.resampling.resampling_constants import LOCAL_RESAMPLING, IR_SELECTIVE_RESAMPLING
+from distribution.data.data_helpers import count_by_class_result
 from distribution.resampling.resampling_algorithm import ResamplingAlgorithm
 from distribution.data.data_helpers import slice_data
 
@@ -82,11 +82,11 @@ class LCNTree(Tree):
 
                 [input_train, output_train] = slice_data(final_data_frame)
 
-                if self.strategy == LOCAL_RESAMPLING:
-                    unique_classes = np.unique(positive_classes_data.iloc[:, -1])
+                if self.strategy == LOCAL_RESAMPLING or self.strategy == IR_SELECTIVE_RESAMPLING:
+                    unique_classes = np.unique(output_train)
                     if len(unique_classes) > 1:
-                        resampling = ResamplingAlgorithm(self.resampling_algorithm, 1, 3)
-                        [input_train, output_train] = resampling.local_resample_lcn(input_train, output_train)
+                        resampling = ResamplingAlgorithm(self.resampling_algorithm, self.strategy, 1, 3)
+                        [input_train, output_train] = resampling.local_resample_lcn(input_train, output_train, current_node.class_name)
 
                 # Store the data in the node
                 current_node.data = Data(input_train, output_train)
@@ -110,7 +110,7 @@ class LCNTree(Tree):
                 visited_node = root_node.child[i]
                 print('Child is {}'.format(visited_node.class_name))
 
-                count_by_class(visited_node.class_name, self.strategy +'-'+self.resampling_algorithm, visited_node.data.outputs)
+                count_by_class_result(visited_node.class_name, self.strategy + '-' + self.resampling_algorithm, visited_node.data.outputs)
 
                 print('Finished Training')
 

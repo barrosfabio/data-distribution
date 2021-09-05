@@ -31,7 +31,7 @@ class ClassificationExperiment():
         inputs_test, outputs_test = self.input_data[test_index], self.output_data[test_index]
 
         if self.strategy == FLAT_RESAMPLING:
-            resampling_algorithm = ResamplingAlgorithm(self.resampler, 1, 3)
+            resampling_algorithm = ResamplingAlgorithm(self.resampler, self.strategy, 1, 3)
             inputs_train, outputs_train = resampling_algorithm.resample(inputs_train, outputs_train)
 
         train_data_frame = data_helpers.array_to_data_frame(inputs_train, outputs_train)

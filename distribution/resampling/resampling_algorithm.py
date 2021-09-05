@@ -12,13 +12,14 @@ from distribution.data.data_helpers import calculate_imbalance_ratio, count_by_c
 import numpy as np
 class ResamplingAlgorithm:
 
-    def __init__(self, algorithm_name, random_state=1,  k_neighbors=3):
+    def __init__(self, algorithm_name, strategy, random_state=1,  k_neighbors=3):
         self.algorithm_name = algorithm_name
         self.sampling_strategy = 'auto'
         self.random_state = random_state
         self.k_neighbors = k_neighbors
         self.n_jobs = -1
         self.resampler = self.instantiate_resampler(algorithm_name)
+        self.resampling_strategy = strategy
 
     # Instantiates a resampling algorithm based on the parameter provided
     def instantiate_resampler(self, algorithm_name):
@@ -76,8 +77,6 @@ class ResamplingAlgorithm:
 
         before_resample = count_by_class(output_data)
         class_count = len(np.unique(output_data))
-        print('Before {} resampling'.format(self.resampling_strategy))
-        count_per_class(output_data)
 
         negative_class = before_resample[before_resample['class'] == NEGATIVE_CLASS]
         positive_class = before_resample[before_resample['class'] == class_name]
@@ -89,7 +88,7 @@ class ResamplingAlgorithm:
             if self.algorithm_name == ADASYN_RESAMPLER:
                 [input_data, output_data] = self.handle_adasyn_algorithm(input_data, output_data)
             else:
-                [input_data, output_data] = self.fit_resample_call(input_data, output_data, before_resample)
+                [input_data, output_data] = self.resample(input_data, output_data)
 
         elif self.resampling_strategy == IR_SELECTIVE_RESAMPLING and class_count > 1:
 
@@ -97,7 +96,7 @@ class ResamplingAlgorithm:
                 if self.algorithm_name == ADASYN_RESAMPLER:
                     [input_data, output_data] = self.handle_adasyn_algorithm(input_data, output_data)
                 else:
-                    [input_data, output_data] = self.fit_resample_call(input_data, output_data, before_resample)
+                    [input_data, output_data] = self.resample(input_data, output_data)
 
 
             else:

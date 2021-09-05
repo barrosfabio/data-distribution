@@ -18,7 +18,7 @@ result_path = '../final_result/'
 folds = 5
 classifier_type = LCPN_CLASSIFIER
 resamplers = [RANDOM_OVERSAMPLER, SMOTE_RESAMPLE, BORDERLINE_SMOTE, ADASYN_RESAMPLER, SMOTE_ENN, SMOTE_TOMEK]
-strategies = [NONE, FLAT_RESAMPLING, LOCAL_RESAMPLING]
+strategies = [FLAT_RESAMPLING, LOCAL_RESAMPLING]
 metric = 'f1-score'
 # Initialize seed of the Stratified k-fold split
 random_seed = 1

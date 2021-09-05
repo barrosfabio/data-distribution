@@ -44,7 +44,7 @@ def count_by_class(output_values):
     return count
 
 
-def count_by_class(local_class, strategy, output_values):
+def count_by_class_result(local_class, strategy, output_values):
     global_config = GlobalConfig.instance()
     label_count = np.unique(output_values, return_counts=True)
     key_count_dict = {}

@@ -4,7 +4,7 @@ from distribution.hierarchy.data import Data
 from distribution.hierarchy.hierarchical_constants import CLASS_SEPARATOR, PREDICTION_CONFIG
 from distribution.data.data_helpers import slice_and_split_data_holdout
 from distribution.resampling.resampling_algorithm import ResamplingAlgorithm
-from distribution.data.data_helpers import count_by_class
+from distribution.data.data_helpers import count_by_class_result
 from distribution.resampling.resampling_constants import LOCAL_RESAMPLING
 from distribution.data.data_helpers import slice_data, array_to_data_frame
 import numpy as np
@@ -88,7 +88,7 @@ class LCPNTree(Tree):
             # Testing if there are at least two child classes, Otherwise we don't need to train the classifier
             if (children > 1):
 
-                count_by_class(root_node.class_name, self.strategy +'-'+self.resampling_algorithm, root_node.data.outputs)
+                count_by_class_result(root_node.class_name, self.strategy + '-' + self.resampling_algorithm, root_node.data.outputs)
 
 
 
