@@ -40,21 +40,21 @@ def find_predicted_class(predictions):
 class LCNTree(Tree):
 
     def retrieve_data(self, root_node, train_data_frame):
-        print('Currently retrieving data for class: {}'.format(root_node.class_name))
+        #print('Currently retrieving data for class: {}'.format(root_node.class_name))
 
         # If the current node doesn't have child, it is a leaf node
         if len(root_node.child) == 0:
-            print('Reached leaf node level, call is being returned.')
+            #print('Reached leaf node level, call is being returned.')
             return
         else:
             # Retrieve the number of children for the current node
             children = len(root_node.child)
-            print('Current Node {} has {} child/children'.format(root_node.class_name, children))
+            #print('Current Node {} has {} child/children'.format(root_node.class_name, children))
 
             # Iterate over the current node child to call recursively for all of them
             for i in range(children):
                 # Retrieving the current node
-                print('Current Child is {}'.format(root_node.child[i].class_name))
+                #print('Current Child is {}'.format(root_node.child[i].class_name))
                 current_node = root_node.child[i]
 
                 # Add classes to
@@ -63,8 +63,8 @@ class LCNTree(Tree):
                 data_class_relationship = current_node.data_class_relationship
                 positive_classes = data_class_relationship.positive_classes
                 negative_classes = data_class_relationship.negative_classes
-                print('Positive classes {} for node {}'.format(positive_classes, current_node.class_name))
-                print('Negative classes {} for node {}'.format(negative_classes, current_node.class_name))
+                #print('Positive classes {} for node {}'.format(positive_classes, current_node.class_name))
+                #print('Negative classes {} for node {}'.format(negative_classes, current_node.class_name))
 
                 # Retrieve the filtered data from the data_frame
                 positive_classes_data = train_data_frame[train_data_frame['class'].isin(positive_classes)]
@@ -77,10 +77,11 @@ class LCNTree(Tree):
                 negative_classes_data = relabel_outputs_lcn(negative_classes_data, NEGATIVE_CLASS)
 
                 # Concatenate both positive and negative classes data-frames
-                final_array = np.concatenate((positive_classes_data, negative_classes_data))
-                final_data_frame = pd.DataFrame(final_array)
-
-                [input_train, output_train] = slice_data(final_data_frame)
+                frames = [positive_classes_data, negative_classes_data]
+                final_array = pd.concat(frames)
+                input_train = final_array.iloc[:,0:-1]
+                output_train = final_array.iloc[:,-1]
+                output_train = output_train.to_numpy()
 
                 if self.strategy == LOCAL_RESAMPLING or self.strategy == IR_SELECTIVE_RESAMPLING:
                     unique_classes = np.unique(output_train)
@@ -90,6 +91,9 @@ class LCNTree(Tree):
 
                 # Store the data in the node
                 current_node.data = Data(input_train, output_train)
+
+                # Save the data in a csv file
+
 
                 # Continue the process recursively for all
                 self.retrieve_data(current_node, train_data_frame)

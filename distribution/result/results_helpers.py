@@ -7,12 +7,35 @@ import pandas as pd
 from distribution.config.global_config import GlobalConfig
 from datetime import datetime
 
+
+def create_data_directory(strategy, resampler, folds):
+    global_config = GlobalConfig.instance()
+    new_directory_name = global_config.file_name + '_' + strategy + '_' + resampler
+    global_config.set_experiment_name(new_directory_name)
+    data_path = global_config.data_path + new_directory_name
+
+    # Creating the root directory to store the data
+    if not os.path.isdir(data_path):
+        print('Created directory {}'.format(data_path))
+        os.mkdir(data_path)
+
+    directory_list = global_config.directory_list
+    directory_list[new_directory_name] = data_path
+    global_config.set_directory_configuration(directory_list)
+
+    # Creating folders for each fold
+    for fold in range(1, folds+1):
+        fold_text = '/fold_' + str(fold)
+        fold_directory = data_path + fold_text
+
+        if not os.path.isdir(fold_directory):
+            print('Created directory {}'.format(fold_directory))
+            os.mkdir(fold_directory)
+
 """
     This method creates the directories to store the results of the experiments
 """
-
-
-def create_result_directories(result_path, classifier_type, file_name, baseline=False):
+def create_result_directories(result_path, classifier_type, baseline=False):
     global_config = GlobalConfig.instance()
 
     timestamp = datetime.now()
@@ -20,9 +43,9 @@ def create_result_directories(result_path, classifier_type, file_name, baseline=
         timestamp.minute) + '_' + str(global_config.random_seed)
 
     if baseline:
-        result_path = result_path + file_name + '_baseline_' + classifier_type + '_' + timestamp_string
+        result_path = result_path + global_config.file_name + '_baseline_' + classifier_type + '_' + timestamp_string
     else:
-        result_path = result_path + file_name + '_' + classifier_type + '_' + timestamp_string
+        result_path = result_path + global_config.file_name + '_' + classifier_type + '_' + timestamp_string
 
     if not os.path.isdir(result_path):
         print('Created directory {}'.format(result_path))

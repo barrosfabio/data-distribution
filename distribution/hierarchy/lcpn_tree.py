@@ -6,7 +6,7 @@ from distribution.data.data_helpers import slice_and_split_data_holdout
 from distribution.resampling.resampling_algorithm import ResamplingAlgorithm
 from distribution.data.data_helpers import count_by_class_result
 from distribution.resampling.resampling_constants import LOCAL_RESAMPLING
-from distribution.data.data_helpers import slice_data, array_to_data_frame
+from distribution.data.data_helpers import slice_data, array_to_data_frame, save_data_frame
 import numpy as np
 import pandas as pd
 
@@ -61,6 +61,9 @@ class LCPNTree(Tree):
 
             # Store the dataset in the node
             root_node.data = Data(input_train, output_train)
+
+            # Save the data in a csv file
+            save_data_frame(root_node.data, root_node.class_name)
 
             # Retrieve the number of children for the current node
             children = len(root_node.child)

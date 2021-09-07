@@ -16,7 +16,7 @@ import pandas as pd
 path = '../dataset'
 result_path = '../final_result/'
 folds = 5
-classifier_type = LCPN_CLASSIFIER
+classifier_type = LCN_CLASSIFIER
 strategy = NONE
 resampler = NONE
 metric = 'f1-score'
@@ -34,12 +34,13 @@ def run_experiment(data_path, filename):
     global_config.set_random_seed(random_seed)
     global_config.set_metric(metric)
     global_config.set_local_classifier(classifier_type)
+    global_config.set_file_name(file_name)
 
     # For each fold
     kfold = StratifiedKFold(n_splits=folds, shuffle=True, random_state=random_seed)
 
     # Create the directories to store the experiment results
-    create_result_directories(result_path, classifier_type, filename, True)
+    create_result_directories(result_path, classifier_type, True)
 
     resampler_results = []
     global_config.set_resampler_results(resampler_results)

@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from distribution.hierarchy.data import Data
 from distribution.config.global_config import GlobalConfig
+import os
 
 CLASS_SEPARATOR = '/'
 
@@ -88,7 +89,7 @@ def slice_and_split_data_holdout(input_data, output_data, test_percentage):
 
 # Function to transform inputs and outputs into a data_frame
 def array_to_data_frame(inputs, outputs):
-    new_data_frame = pd.DataFrame(inputs)
+    new_data_frame = pd.DataFrame(inputs, dtype=np.float32)
     new_data_frame['class'] = outputs
 
     return new_data_frame
@@ -115,5 +116,27 @@ def get_possible_classes(classes):
     print("Getting all possible combinations for each label: {}".format(combinations))
 
     return combinations
+
+def save_data_frame(data, data_class):
+    global_config = GlobalConfig.instance()
+
+    inputs = data.inputs
+    outputs = data.outputs
+
+    data_frame = array_to_data_frame(inputs, outputs)
+
+    experiment_name = global_config.experiment_name
+    data_class = data_class.replace('/','_')
+
+    path = global_config.directory_list[experiment_name] + '/fold_' + str(global_config.kfold) + '/'
+
+    if not os.path.isdir(path):
+        os.mkdir(path)
+
+    data_frame.to_csv(sep=',', path_or_buf=path + '/' + str(data_class)+ '.csv')
+
+
+
+
 
 

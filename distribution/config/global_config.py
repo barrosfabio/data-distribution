@@ -35,3 +35,12 @@ class GlobalConfig():
 
     def set_resampler_results(self, resampler_results):
         self.resampler_results = resampler_results
+
+    def set_data_path(self, data_path):
+        self.data_path = data_path
+
+    def set_file_name(self, file_name):
+        self.file_name = file_name
+
+    def set_experiment_name(self, experiment_name):
+        self.experiment_name = experiment_name
