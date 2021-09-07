@@ -8,16 +8,13 @@ from distribution.hierarchy.hierarchical_constants import LCPN_CLASSIFIER, LCN_C
 from distribution.classification.classification_experiment import ClassificationExperiment
 from distribution.result.results_helpers import transform_multiple_dict_to_csv
 
-
 import os
-import pandas as pd
-
 
 path = '../dataset'
 result_path = '../final_result/'
 final_data_path = '../final_data/'
 folds = 5
-classifier_type = LCPN_CLASSIFIER
+classifier_type = LCN_CLASSIFIER
 resamplers = [RANDOM_OVERSAMPLER, SMOTE_RESAMPLE, BORDERLINE_SMOTE, ADASYN_RESAMPLER, SMOTE_ENN, SMOTE_TOMEK]
 strategies = [FLAT_RESAMPLING, LOCAL_RESAMPLING, IR_SELECTIVE_RESAMPLING]
 metric = 'f1-score'
@@ -50,7 +47,7 @@ def run_experiment(data_path, filename):
 
         for resampler in resamplers:
 
-            create_data_directory(strategy, resampler, folds)
+            create_data_directory(strategy, resampler, folds, classifier_type)
 
             experiment = ClassificationExperiment(unique_classes, input_data, output_data, classifier_type, strategy, resampler)
 

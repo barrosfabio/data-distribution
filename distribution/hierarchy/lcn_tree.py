@@ -4,7 +4,7 @@ from distribution.hierarchy.hierarchical_constants import NEGATIVE_CLASS
 from distribution.resampling.resampling_constants import LOCAL_RESAMPLING, IR_SELECTIVE_RESAMPLING
 from distribution.data.data_helpers import count_by_class_result
 from distribution.resampling.resampling_algorithm import ResamplingAlgorithm
-from distribution.data.data_helpers import slice_data
+from distribution.data.data_helpers import save_data_frame
 
 import numpy as np
 import pandas as pd
@@ -93,7 +93,7 @@ class LCNTree(Tree):
                 current_node.data = Data(input_train, output_train)
 
                 # Save the data in a csv file
-
+                save_data_frame(current_node.data, current_node.class_name)
 
                 # Continue the process recursively for all
                 self.retrieve_data(current_node, train_data_frame)

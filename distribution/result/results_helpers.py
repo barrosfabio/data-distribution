@@ -8,9 +8,9 @@ from distribution.config.global_config import GlobalConfig
 from datetime import datetime
 
 
-def create_data_directory(strategy, resampler, folds):
+def create_data_directory(strategy, resampler, folds, classifier_type):
     global_config = GlobalConfig.instance()
-    new_directory_name = global_config.file_name + '_' + strategy + '_' + resampler
+    new_directory_name = global_config.file_name +'_' + classifier_type + '_' + strategy + '_' + resampler
     global_config.set_experiment_name(new_directory_name)
     data_path = global_config.data_path + new_directory_name
 
