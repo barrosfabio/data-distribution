@@ -25,11 +25,12 @@ class ResamplingAlgorithm:
     def instantiate_resampler(self, algorithm_name):
 
         smote = SMOTE(sampling_strategy=self.sampling_strategy, k_neighbors=self.k_neighbors, random_state=42, n_jobs=self.n_jobs)
+        enn = EditedNearestNeighbours(n_neighbors=2)
 
         if algorithm_name == SMOTE_RESAMPLE:
             return smote
         elif algorithm_name == SMOTE_ENN:
-            return SMOTEENN(sampling_strategy=self.sampling_strategy, random_state=self.random_state, n_jobs=self.n_jobs, smote=smote)
+            return SMOTEENN(sampling_strategy='all', random_state=self.random_state, n_jobs=self.n_jobs, smote=smote, enn=enn)
         elif algorithm_name == SMOTE_TOMEK:
             return SMOTETomek(sampling_strategy=self.sampling_strategy, random_state=self.random_state, n_jobs=self.n_jobs, smote=smote)
         elif algorithm_name == BORDERLINE_SMOTE:

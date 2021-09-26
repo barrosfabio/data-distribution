@@ -3,7 +3,7 @@ from sklearn.model_selection import StratifiedKFold
 
 from distribution.resampling.resampling_constants import *
 from distribution.config.global_config import GlobalConfig
-from distribution.result.results_helpers import calculate_average_result,consolidate_result, create_result_directories
+from distribution.result.results_helpers import calculate_average_result,consolidate_result, create_result_directories, create_data_directory
 from distribution.hierarchy.hierarchical_constants import LCPN_CLASSIFIER, LCN_CLASSIFIER
 from distribution.classification.classification_experiment import ClassificationExperiment
 from distribution.result.results_helpers import transform_multiple_dict_to_csv
@@ -15,6 +15,7 @@ import pandas as pd
 
 path = '../dataset'
 result_path = '../final_result/'
+final_data_path = '../final_data/'
 folds = 5
 classifier_type = LCN_CLASSIFIER
 strategy = NONE
@@ -34,7 +35,8 @@ def run_experiment(data_path, filename):
     global_config.set_random_seed(random_seed)
     global_config.set_metric(metric)
     global_config.set_local_classifier(classifier_type)
-    global_config.set_file_name(file_name)
+    global_config.set_data_path(final_data_path)
+    global_config.set_file_name(filename)
 
     # For each fold
     kfold = StratifiedKFold(n_splits=folds, shuffle=True, random_state=random_seed)
@@ -45,9 +47,13 @@ def run_experiment(data_path, filename):
     resampler_results = []
     global_config.set_resampler_results(resampler_results)
 
-    experiment = ClassificationExperiment(unique_classes, input_data, output_data, classifier_type, strategy, resampler)
+    experiment = ClassificationExperiment(unique_classes, input_data, output_data, classifier_type, NONE, NONE)
+
+
 
     kfold_count = 1
+
+    create_data_directory(NONE, NONE, folds, classifier_type)
 
     for train_index, test_index in kfold.split(input_data, output_data):
         print('----------Started fold {} ----------'.format(kfold_count))
