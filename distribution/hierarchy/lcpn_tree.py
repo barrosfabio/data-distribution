@@ -7,6 +7,7 @@ from distribution.resampling.resampling_algorithm import ResamplingAlgorithm
 from distribution.data.data_helpers import count_by_class_result
 from distribution.resampling.resampling_constants import LOCAL_RESAMPLING
 from distribution.data.data_helpers import slice_data, array_to_data_frame, save_data_frame
+from distribution.data.singleton_frame import SingletonFrame
 import numpy as np
 import pandas as pd
 
@@ -31,7 +32,7 @@ def relabel_outputs_lcpn(positive_classes_data, data_class):
 
 class LCPNTree(Tree):
 
-    def retrieve_data(self, root_node, train_data_frame):
+    def retrieve_data(self, root_node):
 
         print('Currently retrieving dataset for class: {}'.format(root_node.class_name))
 
@@ -45,26 +46,6 @@ class LCPNTree(Tree):
             positive_classes = data_class_relationship.positive_classes
             print('Positive classes {} for node {}'.format(positive_classes, root_node.class_name))
 
-            # Retrieve the filtered dataset from the data_frame
-            positive_classes_data = train_data_frame[train_data_frame['class'].isin(positive_classes)]
-
-            # Relabel the outputs to the child classes
-            relabeled_data = relabel_outputs_lcpn(positive_classes_data, root_node.class_name)
-
-            [input_train, output_train] = slice_data(relabeled_data)
-
-            if self.strategy == LOCAL_RESAMPLING:
-                unique_classes = np.unique(positive_classes_data.iloc[:,-1])
-                if len(unique_classes) > 1:
-                    resampling = ResamplingAlgorithm(self.resampling_algorithm, 1, 3)
-                    [input_train, output_train] = resampling.resample(input_train, output_train)
-
-            # Store the dataset in the node
-            root_node.data = Data(input_train, output_train)
-
-            # Save the data in a csv file
-            save_data_frame(root_node.data, root_node.class_name)
-
             # Retrieve the number of children for the current node
             children = len(root_node.child)
             print('Current Node {} has {} child/children'.format(root_node.class_name, children))
@@ -72,7 +53,36 @@ class LCPNTree(Tree):
             # Iterate over the current node child to call recursively for all of them
             for i in range(children):
                 print('Child is {}'.format(root_node.child[i].class_name))
-                self.retrieve_data(root_node.child[i], train_data_frame)
+                self.retrieve_data(root_node.child[i])
+
+            singleton_frame = SingletonFrame.instance()
+
+            # Retrieve the filtered dataset from the data_frame
+            positive_classes_data = singleton_frame.train_data_frame[singleton_frame.train_data_frame['class'].isin(positive_classes)]
+
+            # Relabel the outputs to the child classes
+            relabeled_data = relabel_outputs_lcpn(positive_classes_data, root_node.class_name)
+
+            [input_train, output_train] = slice_data(relabeled_data)
+
+            if self.strategy == LOCAL_RESAMPLING:
+                unique_classes = np.unique(positive_classes_data.iloc[:, -1])
+                if len(unique_classes) > 1:
+                    resampling = ResamplingAlgorithm(self.resampling_algorithm, 1, 3)
+                    [input_train, output_train] = resampling.resample(input_train, output_train)
+
+            resampled_df = array_to_data_frame(input_train, output_train)
+
+            # Append with the original data_frame
+            singleton_frame.train_data_frame = singleton_frame.train_data_frame.append(resampled_df.iloc[len(relabeled_data):,])
+
+            # Store the dataset in the node
+            root_node.data = Data(input_train, output_train)
+
+            # Save the data in a csv file
+            save_data_frame(root_node.data, root_node.class_name)
+
+            return
 
     def count_hierarchical(self, root_node):
 

@@ -5,6 +5,7 @@ from distribution.hierarchy.lcn_tree import LCNTree
 from distribution.hierarchy.hierarchical_constants import LCPN_CLASSIFIER, LCN_CLASSIFIER
 from distribution.resampling.resampling_constants import FLAT_RESAMPLING
 from distribution.resampling.resampling_algorithm import ResamplingAlgorithm
+from distribution.data.singleton_frame import SingletonFrame
 
 class ClassificationExperiment():
 
@@ -39,8 +40,11 @@ class ClassificationExperiment():
         # Here we are creating one node for each sub-class
         tree.build_tree()
 
+        singleton_df = SingletonFrame.instance()
+        singleton_df.set_train_data(train_data_frame)
+
         # Retrieving data according to the policies
-        tree.retrieve_data(tree.root, train_data_frame)
+        tree.retrieve_data(tree.root)
 
         resampling_strategy = self.strategy + self.resampler
 

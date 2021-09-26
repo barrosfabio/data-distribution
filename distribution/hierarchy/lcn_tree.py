@@ -4,7 +4,9 @@ from distribution.hierarchy.hierarchical_constants import NEGATIVE_CLASS
 from distribution.resampling.resampling_constants import LOCAL_RESAMPLING, IR_SELECTIVE_RESAMPLING
 from distribution.data.data_helpers import count_by_class_result
 from distribution.resampling.resampling_algorithm import ResamplingAlgorithm
-from distribution.data.data_helpers import save_data_frame
+from distribution.data.data_helpers import array_to_data_frame, save_data_frame
+from distribution.data.singleton_frame import SingletonFrame
+
 
 import numpy as np
 import pandas as pd
@@ -39,7 +41,7 @@ def find_predicted_class(predictions):
 
 class LCNTree(Tree):
 
-    def retrieve_data(self, root_node, train_data_frame):
+    def retrieve_data(self, root_node):
         #print('Currently retrieving data for class: {}'.format(root_node.class_name))
 
         # If the current node doesn't have child, it is a leaf node
@@ -66,9 +68,14 @@ class LCNTree(Tree):
                 #print('Positive classes {} for node {}'.format(positive_classes, current_node.class_name))
                 #print('Negative classes {} for node {}'.format(negative_classes, current_node.class_name))
 
+                # Continue the process recursively for all
+                self.retrieve_data(current_node)
+
+                singleton_df = SingletonFrame.instance()
+
                 # Retrieve the filtered data from the data_frame
-                positive_classes_data = train_data_frame[train_data_frame['class'].isin(positive_classes)]
-                negative_classes_data = train_data_frame[train_data_frame['class'].isin(negative_classes)]
+                positive_classes_data = singleton_df.train_data_frame[singleton_df.train_data_frame['class'].isin(positive_classes)]
+                negative_classes_data = singleton_df.train_data_frame[singleton_df.train_data_frame['class'].isin(negative_classes)]
 
                 # Relabel the positive classes
                 positive_classes_data = relabel_outputs_lcn(positive_classes_data, current_node.class_name)
@@ -79,24 +86,27 @@ class LCNTree(Tree):
                 # Concatenate both positive and negative classes data-frames
                 frames = [positive_classes_data, negative_classes_data]
                 final_array = pd.concat(frames)
-                input_train = final_array.iloc[:,0:-1]
-                output_train = final_array.iloc[:,-1]
+                input_train = final_array.iloc[:, 0:-1]
+                output_train = final_array.iloc[:, -1]
                 output_train = output_train.to_numpy()
 
                 if self.strategy == LOCAL_RESAMPLING or self.strategy == IR_SELECTIVE_RESAMPLING:
                     unique_classes = np.unique(output_train)
                     if len(unique_classes) > 1:
                         resampling = ResamplingAlgorithm(self.resampling_algorithm, self.strategy, 1, 3)
-                        [input_train, output_train] = resampling.local_resample_lcn(input_train, output_train, current_node.class_name)
+                        [input_train, output_train] = resampling.local_resample_lcn(input_train, output_train,
+                                                                                    current_node.class_name)
+
+                resampled_df = array_to_data_frame(input_train.copy(deep=True), output_train)
+
+                # Append with the original data_frame
+                singleton_df.train_data_frame = singleton_df.train_data_frame.append(resampled_df.iloc[len(final_array):,])
 
                 # Store the data in the node
                 current_node.data = Data(input_train, output_train)
 
                 # Save the data in a csv file
                 save_data_frame(current_node.data, current_node.class_name)
-
-                # Continue the process recursively for all
-                self.retrieve_data(current_node, train_data_frame)
 
     def count_hierarchical(self, root_node):
         print('Training a LCN Classifier')

@@ -70,6 +70,7 @@ class ResamplingAlgorithm:
             else:
                 [input_data, output_data] = self.resampler.fit_resample(input_data, output_data)
 
+
         return [input_data, output_data]
 
         # Executes hierarchical resampling for LCN Classifier

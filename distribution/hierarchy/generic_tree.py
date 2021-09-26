@@ -34,11 +34,11 @@ class Tree():
         self.root = None
 
     @abstractmethod
-    def retrieve_data(self, root_node, data_frame):
+    def retrieve_data(self, root_node):
         pass
 
     @abstractmethod
-    def count_hierarchical(self, root_node, resamplers_results_list):
+    def count_hierarchical(self, root_node):
         pass
 
 
